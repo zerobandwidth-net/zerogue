@@ -1,0 +1,20 @@
+zerogue 0.4.0 Key Mapping
+
+[  Q   |  W   |  E   |  R   |  T   |  Y   |  U   |  I   |  O   |  P   ]
+[ Quit |+ Armr|      |- Ring|- Armr|DashNW|DashNE|Inv. 1|      |+ Ring]
+
+[  q   |  w   |  e   |  r   |  t   |  y   |  u   |  i   |  o   |  p   ]
+[quaff |wield | eat  | read |throw |moveNY|moveNE| inv. |      |      ]
+
+
+ [  A   |  S   |  D   |  F   |  G   |  H   |  J   |  K   |  L   ]
+ [      | Save |Disarm|Fight!|      |Dash W|Dash S|Dash N|Dash E]
+
+ [  a   |  s   |  d   |  f   |  g   |  h   |  j   |  k   |  l   ]
+ [appr. |search| drop |fight |      |move W|move S|move N|move E]
+
+  [  Z   |  X   |  C   |  V   |  B   |  N   |  M   |  <   |  >   |  ?   ]
+  [      |SavScr|      |      |DashSW|DashSE|      |UpStrs|DnStrs| help ]
+
+  [  z   |  x   |  c   |  v   |  b   |  n   |  m   |  ,   |  .   |  /   ]
+  [ zap  |      | call |versn.|moveSW|moveSE| move |pickup| rest |whatis]

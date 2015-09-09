@@ -1,0 +1,428 @@
+zerogue (Branched from LinuxRogue 0.3.2)
+CHANGES log
+
+
+-------------------------------------------------------------------------------
+
+Version 0.4.3 beta
+Pasha Paterson <draco@zerobandwidth.net>
+
+Replaces 0.4.2 beta, introduces new floor objects.
+
+2011-11-14
+
+* (pack.c)
+  When self-identification of weapons was added on 2011-10-18, it opened a
+  loophole whereby any wieldable object -- including potions and wands --
+  would self-identify.  The code has now been changed such that only true
+  weapons will self-identify.
+* (rogue.h, floorobject.c)
+  Added two new types of floor objects.  The "analyzer" will attempt to
+  identify an item, but might break or steal it instead.  The "fountain" will
+  supply a certain number of doses of various potion types, not all of them
+  good for you.  Now that there are multiple floor object types, the functions
+  that create floor objects have been fully generalized.  New arrays of
+  integers, defined locally in floorobject.c, specify the minimum level and
+  base appearance chance of each type of floor object.
+* (floorobject.*)
+  fobj_transmutate() has been removed from general accessibility.
+* (special_hit.*)
+  Made the steal_gold() function accessible.  Also added a check to verify that
+  the address of a monster was indeed passed in; otherwise, the disappear()
+  function is not invoked to make the monster vanish.
+* (use.*)
+  In order to reuse the existing code for quaffing a potion, a new function
+  apply_potion() was added.  The existing quaff() function for quaffing a
+  bottled potion now calls apply_potion() to apply the potion's effects; the
+  fountain floor object may also call this function to apply the effects of
+  the fountain's contents.
+
+-------------------------------------------------------------------------------
+
+Version 0.4.2 beta
+Pasha Paterson <draco@zerobandwidth.net>
+
+Replaces 0.4.1 alpha, starts beta release train on SourceForge.
+See http://sourceforge.net/projects/zerogue/
+  
+2011-11-09
+
+* (floorobject.c)
+  Discovered and fixed a bug where an invalid item letter entry for an item-to-
+  gold transmutation would throw a seg fault, because the null result was not
+  caught by the surrounding logic until it was passed to vanish().
+
+2011-10-24
+
+* (room.c)
+  By changing the way that floorobjects were classified, it became
+  possible that a floor object might be placed but not visible on a level.
+  This bug was corrected.
+
+2011-10-20
+
+* (play.c) Noticed ROGUE_KEY_VERSION and changed the version message.
+* (floorobject.c) Separated the code for placing a transmutator out to new
+  function put_transmutator().  Removed reference to place_at() from this code,
+  since that has been adding duplicate objects to level_objects.  Oops.
+
+2011-10-18
+
+* [BUG] Encountered a weird error where the "setuid failed!" message ended
+  up getting copied into the m_names[] table in place of "aquator".  This
+  suggests some kind of really bizarre memory smash that will be difficult to
+  diagnose.
+
+* (message.c) Changed the way "HP" is displayed.
+* (throw.c) Changed the message for a thrown potion that hits without taking
+  effect.
+* (floorobject.*, object.c, main.c)
+  Separated code related to floor objects out of object.* and into new files
+  floorobject.*.  Changed put_transmutator() into put_floor_objects() to make
+  room for different kinds of floor objects.
+* (rogue.h)
+  Changed up the constants for floor objects.  Added several constants for the
+  which_kind field in floor objects, planning for future types of floor
+  objects.
+* (pack.c)
+  Weapons, like armor, self-identify when equipped.
+
+-------------------------------------------------------------------------------
+
+Version 0.4.1 alpha
+Pasha Paterson <draco@zerobandwidth.net>
+
+Replaces 0.4.0 alpha, adds a bunch of crazy new stuff.
+
+2011-10-17
+
+* (score.c)
+  Removed the code that prevents display of more than one score by the same
+  user.  The top ten all-time scores for any player will now be saved, even if
+  a single user has multiple scores.
+
+2011-10-12
+
+* (object.c)
+  Changed the behavior of the transmutator.  For weapons and armor, items
+  created by the transmutator are pre-identified.  For other item types, only
+  those item kinds that have already been identified or called by the player
+  are added to the pack.  Each make_*_pack() function now returns the number of
+  items created, so that, if that number is zero, the transmutator gives a
+  meaningful message and shuts down without offering its list of zero choices.
+* (pack.c)
+  Changed the way that pack_count() evaluates whether a rogue's pack is full,
+  by considering anything that can stack under a pack letter as a single item.
+  This is more similar to modern MMO inventory schemes, and frees a up a lot
+  more room for the rogue to carry stuff.  This also fixes a bug where the
+  player would be told his pack is full when trying to pick up food, but if the
+  player then dropped a weapon, he could pick up the food and then pick up the
+  weapon again.  Because there are far more kinds of items than there are rows
+  on a default terminal (24), pack_count() includes a hard limit of DROWS,
+  which ensures that the size of the rogue's pack will never exceed the game's
+  ability to display its contents.
+* (inventory.c, object.c)
+  Corrected inventory display of stacked fruits.
+
+2011-10-11
+
+* (use.c, level.*, special_hit.c)
+  Changed the behavior of drop_level() so that it doesn't change the rogue's
+  actual level.  Instead, it applies "negative levels" that are factored into
+  calculations of the rogue's "effective level".  To support this, a function
+  get_rogue_level() has been added to level.* to handle the effective level
+  calculation consistently, and take that logic out of all the many places
+  where it's used.  This new function accounts for both the new expmod variable
+  and the previously-defined ring_exp variable from ring.c.
+* (appraise.c, hit.c, level.c, message.c, monster.c, move.c, special_hit.c,
+   throw.c, trap.c, use.c, zap.c)
+  Modified algorithms to use get_rogue_level() -- the rogue's "effective level"
+  -- instead of just the level itself.
+* (rogue.h, object.c, use.c, appraise.c)
+  Added a RESTORE_LEVEL potion, which wipes out negative levels, if any.
+
+2011-10-06
+
+* (rogue.h) Lowered AMULET_LEVEL from 26 to 24.  Raised MAX_HP from 800 to 999.
+* (rogue.h, main.c, message.*, move.c, object.*, room.c)
+  Added the "transmutator" artifact, which can be used to convert items to gold
+  and vice versa.  The gold value of an item is used to convert items; these
+  values were already present in the id_*[] tables for each item type, and can
+  be evaluated by get_value() in score.c.  When the rogue bumps into the trans-
+  mutator, it gives the choice to trade [g]old or [i]tems.  If trading gold, it
+  presents an interface for selecting an item to "buy".  If trading an item, it
+  takes that item and gives back that item's gold value.  The transmutator is
+  part of a new FLOOROBJECT class of dungeon objects.
+* (use.c) Changed behavior of the INCREASE_STRENGTH potion, such that it always
+  boosts max strength by 1 and current strength by 1, even if they're
+  different.
+
+-------------------------------------------------------------------------------
+
+Version 0.4.0 alpha
+Pasha Paterson <draco@zerobandwidth.net>
+
+This version represents a branch from LinuxRogue 0.3.2 by Ashwin N.
+This branch introduces new gameplay elements which take zerogue down a path
+toward being a separate roguelike game, distinct from the original rogue.
+
+2011-10-05
+
+* (use.c, monster.c) A monster created by a scroll is briefly confused.
+* (use.c) A rogue using a scroll of teleportation for the first time is
+  briefly confused.
+* (trap.c) A rogue teleported by a trap is briefly confused.
+* (trap.c) Disarming a trap is now a countable operation, like searching.
+* (appraise.c) Corrected a cut-and-paste error that gave the same message for
+  normal vs. enchanted weapons.
+* (special_hit.c) Removed a goto from steal_item(object*).
+* (hit.c) Removed char* mn as a local variable in mon_damage(object*,short).
+  The variable is given a value later in the function, but that value is never
+  used by anything.
+* (special_hit.c) Added a global variable stolen_gold to track the amount of
+  gold stolen by leprechauns.  This variable represents a "pot" of gold into
+  which all the stolen gold is placed.  When a leprechaun is killed, the rogue
+  gets all the gold in the pot, and the cycle starts over.  If there is no
+  gold in the pot when a leprechaun is killed, a single gold piece is dropped.
+* (object.c) Fruit is now stackable.
+* (room.c) Changed display character for Amulet of Yendor from comma (',') to
+  dollar sign ('$').
+
+2011-10-04
+
+* (inventory.c) Changed the way that armor information is displayed.  An
+  identified suit of armor will have its bonus displayed as [N] where N is the
+  armor's bonus.  A protected suit of armor will be shown as [N+].  A cursed
+  suit of armor will be shown as [N-].
+* (trap.c) Changed the message for disarmed trap.
+* (use.c) Totally changed the way that sleep scrolls work.  If you read a
+  sleep scroll that has been identified, and there are any monsters within two
+  spaces of the rogue, those monsters take a nap, as if hit by a wand/staff of
+  sleep.  If there are no monsters around, or if the scroll hasn't yet been
+  identified, the rogue falls asleep instead.
+
+2011-06-10
+* (level.c) Changed add_exp() so that, if the rogue's level increases, then
+  the rogue's HP is raised to max, similar to the "Ding!" effect in modern
+  MMORPGs, etc.
+
+2011-05-26
+* (throw.c) Added code such that a status-effecting potion that hits a monster
+  will be identified if its effect hits.
+
+2011-05-19
+* (rogue.h, trap.h, trap.c, play.c) Added a new "Disarm" command, allowing a
+  player to attempt to disarm a trap that is visible.
+* (zap.c) Changed duration of PUT_TO_SLEEP wands from 1d4+2 to 1dL+2.
+* (trap.c, move.c) Tried to fix some possible seg-fault errors with disarmed
+  traps.  Eventually found the bug in the search() function, where a trap of
+  type NO_TRAP (-1) would throw a seg-fault when used as the array index for
+  trap_strings[].
+* (throw.c) Fixed some messages for wands.  Also fixed effect when hitting a
+  monster with a hallucination or confusion potion -- the CONFUSED flag was not
+  being set.
+* (score.h, score.c) Renamed xxxx(char*,int) as name_cipher(char*,int), and
+  renamed xxx(boolean) as char_cipher(boolean).
+* (move.c) Inserted some comments explaining the inner workings of heal().
+  Fixed the bug that would cause the player's HP to be reduced to max (losing
+  temporary HP from the potion) after the player moved one heal increment's
+  worth of steps.  Judging from pre-existing comments, Ashwin tuned up the
+  healing speed with "alt", which would cause the algorithm to alternate
+  between +1 and +2 HP.  I've removed that switch (and its supporting static
+  variable). 
+
+2011-05-18
+* (inventory.c) Added logic in get_desc() to indicate whether a suit of armor
+  has been protected, and thus immune to rusting.  A "[+]" is appended after
+  the armor class indication.
+* (ring.c, move.c) The original code for food consumption depended on an extern
+  counter e_rings defined in ring.c, which counted the number of rings that
+  were equipped.  Each ring would increase food consumption by 50%; two rings
+  effectively doubled food consumption.  I've replaced the e_rings concept with
+  the variable r_hunger, which acts as a multiplier for food consumption.  Each
+  normal ring increases hunger by a new constant RING_HUNGER_FACTOR.  The ring
+  of "slow digestion" now acts as a ring of "sustenance", changing the hunger
+  multiplier to zero.
+* (keys.qwerty.h) Changed wizard's key for "create new object" from \177 (del)
+  to \006 (Ctrl-F).  When accessing Linux remotely, processing of the Delete
+  key can be unreliable.
+* (move.c) While working on the reformulation of hunger and rings, I had added
+  a modified hunger stat display that would show the value of rogue.moves_left
+  and a one-character hungry/weak/faint flag.  This is TMI for a normal
+  player, but I've left it in place for Wizard Mode.
+* (pack.c) Continued messing with status messages for dropped items.
+* (pack.c) Enhanced check_duplicate(object*,object*) such that, if the player
+  picks up a stackable weapon (arrow, dagger, dart, or shuriken), and the
+  item is identical to a weapon of the same type, then the stacks will be
+  merged.  This will collapse, for example, two stacks of +0,+0 arrows, even
+  if they originated in different quivers.
+* (object.h, object.c, pack.c) In the process, I discovered that the weapon
+  stack evaluation logic in check_duplicate also appears in the
+  pack_count(object*) function that figures out whether you can pick something
+  up off the floor.  In order to condense that nasty logic into one place, two
+  new functions, is_stackable(object*) and could_stack_items(object*,object*),
+  have been added.
+
+2011-05-17
+* (use.c) Adjusted amount of HP healed by healing potions.  Since the rogue's
+  max HP is raised by 1d8+2 per level, and healing potions shouldn't be free
+  passes for recklessness, I've changed the formula to Ld6+L, where L is the
+  rogue's experience level.  (Sorry, D&D fans, Ld8+L is just too powerful
+  here, especially for extra-healing potions that can take you over max.)
+* (throw.c) Added logic to throw_at_monster(object*,object*) allowing certain
+  potions to transfer their effects to monsters when thrown.
+* (zap.c) Cleaned up some status messages.  Also added status messages to
+  successful zap actions, allowing the player to guess what a zap weapon's
+  effect might be, even if it hasn't been identified.
+* (appraise.c, play.c, rogue.h) Added the appraise() function, which adds the
+  "appraise" command.  This command allows a player to try to figure out what
+  an item might do, without having a scroll of identify.  The appraisal
+  messages for most items are non-unique, so it's not as definite as real 
+  identification.
+* (move.c) Cleaned up messages regarding "fainting".
+* (pack.c) Cleaned up some status messages.
+* (use.c) Changed prototype for idntfy() to identify_item(short).  The
+  argument allows a character to be passed into the function from appraise(),
+  when the player lucks out and gets a "perfect" appraisal.
+* (rogue.h) Added PERFECT_APPRAISAL_CHANCE, allowing the developer to tune the
+  effectiveness of the "appraise" command.
+
+2011-05-16
+* (*.c) Started trying to purge goto statements.
+* (hit.c) Enhanced hit messages to show damage dealt.
+* (throw.c) Enhanced hit messages to show damage dealt.
+* (inventory.c) Extended get_desc() with a boolean parameter to specify whether
+  the first letter of the item's description should be capitalized.
+* (monster.c) Adjusted rattlesnake damage from 2d5 to 1d2.
+
+-------------------------------------------------------------------------------
+
+Version: 0.3.2
+2004-05-02
+Ashwin N. <ashwin@despammed.com>
+
+Miguel G. C. <mgcuadrado@indra.es>
+* Extended out the QWERTY specific key mapping into a generic configuration.
+  Added support for DVORAK key mapping.
+
+Ashwin N. <ashwin@despammed.com>
+* Removed all (ancient) UNIX specific idiosyncracies in machdep.c
+
+-------------------------------------------------------------------------------
+
+Version: 0.3
+2004-02-15
+Ashwin N. <ashwin@despammed.com>
+
+Ashwin N <ashwin@despammed.com>
+* Header files added for all source files. #includes of these files added
+  to all source files to replace the former dirty way of using externs.
+* Makefile
+  Prerequisites are generated automatically. Needs some more work.
+* Corrected tons of punctuation mistakes in the messages displayed to the
+  player.
+* static on functions removed. It was unnecessary in the first place.
+* Unused extern variable declarations removed.
+* Lots of beautification of code (mostly on braces).
+* shorts converted to ints in lots of places.
+* spec_hit.c file renamed to special_hit.c
+
+Chris
+* hit.c
+  Integer math bug fixed in damage to armor.
+* inventory.c
+  The output is always sorted by the selection letter. The other change allows
+  you to select an item from the inventory viewing screen. The second is how
+  the old inventory() function ended up moved to inv_sel() with inventory()
+  just becoming a call to inv_sel() with arguments.
+* monster.c
+  Added a function fix_mon_damage. This function corrects the damage pointer
+  when loading a saved game for a monster. Prior to this fix, monsters already
+  present on a level when saved were restored with random damage amounts. Most
+  commonly unable to hit the player due to their damage being 0.
+* move.c
+  My changes are an attempt to enable following of tunnels between rooms. It
+  gets a little funny when you are in one of those maze style rooms but works
+  for the most part. Following of turns in the tunnels is only active for
+  control and a direction. Such as ^H.
+* object.c
+  The weapon equivalent of the monster fix. It was very annoying to restore a
+  saved game and suddenly only be able to hit a monster with the damage for
+  your strength.
+* pack.c
+  Contains the remainder of the changes to allow selection during inventory
+  display.
+* play.c
+  The changes to allow the / command to identify characters on the screen as
+  per rogue-guide.txt.
+* save.c
+  Added code to call the functions to fix monster and weapon damages when
+  restoring a saved file.
+* rogue-guide.txt
+  High bit characters changed to normal chars.
+
+-------------------------------------------------------------------------------
+
+Version: 0.2.2
+2004-01-15
+Ashwin N <ashwin@despammed.com>
+
+* V0.2.1 carried a corrupted AUTHORS file. The file has been repaired.
+
+-------------------------------------------------------------------------------
+
+Version: 0.2.1
+2003-03-09
+Ashwin N <ashwin@despammed.com>
+
+Lots of fixes in 0.2.1. Most of the Segmentation Faults should disappear now.
+
+* After seeking help (using ?) the dungeon map used to disappear. This is
+  fixed.
+* get_input_line was being called with the wrong parameters in lots of places.
+  All of them are fixed. No more silly Segmentation Faults that were being
+  reported should occur.
+* Password has been changed from an eccentric one to "password"
+* Command to create objects in wizard mode was Ctrl-C, now changed to Ctrl-/
+
+  (Thanks to Matt <mattk@cyberonic.com> for pointing out all the above bugs
+  and their fixes too.)
+
+* Karl-Olov Serrander reported problems with getlogin() in function md_gln()
+  under RH8. Replaced it with getpwnam() as he suggested.
+
+-------------------------------------------------------------------------------
+
+Version: 0.2
+2003-02-21
+Ashwin N <ashwin@despammed.com>
+
+* The inbuilt curses/termlib emulation code (for systems which don't have
+  ncurses) has been removed.
+* All register variables changed to normal.
+* All function declaration and definitions ANSI-fied from the old K&R style.
+* All warnings fixed (a ton of them used to show up if I compiled with -Wall).
+
+-------------------------------------------------------------------------------
+
+Verison: 0.1
+
+* The latest version I could get my hands on when I looked for a Linux port of
+  Rogue.
+
+-=-=-=-=-=-=-=-=-
+
+Title:          Rogue Clone
+Version:        LinuxRogue 0.1 (Rogue 5.3 Clone Pl2)
+Description:    Rogue dungeon game
+Author:         Alan Cox(anarchy@sunacm.swan.ac.uk)
+                derived from prior work by
+                        stevew@netcom.com(Steve Wilson)         (Linux Port)
+                        tim@zeus.tek.com(Tim Stoehr)            (Original work)
+Maintained-By:  Alan Cox(anarchy@sunacm.swan.ac.uk)
+                (Swansea University Computer Society)
+Platforms:      Linux 0.95 or better, Linux-Lite
+Copying-Policy: Freely Redistributable
+Keywords:       rogue dungeons of doom linux game yendor
+
+-=-=-=-=-=-=-=-=-
