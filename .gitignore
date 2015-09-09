@@ -30,6 +30,10 @@
 *.i*86
 *.x86_64
 *.hex
+rogue
 
 # Debug files
 *.dSYM/
+
+# Score files
+.roguescores
