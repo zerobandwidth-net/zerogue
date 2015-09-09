@@ -37,3 +37,7 @@ rogue
 
 # Score files
 .roguescores
+
+# Eclipse artifacts
+.project
+.cproject
