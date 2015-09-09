@@ -1,6 +1,15 @@
 zerogue (Branched from LinuxRogue 0.3.2)
 CHANGES log
 
+-------------------------------------------------------------------------------
+
+Version 0.4.4 beta
+Pasha Paterson <pasha.paterson@gmail.com>
+
+Moved the code off of SourceForge and onto GitHub. It will now be hosted by the
+GitHub repository for zerobandwidth.net.
+
+https://github.com/zerobandwidth-net/zerogue
 
 -------------------------------------------------------------------------------
 
