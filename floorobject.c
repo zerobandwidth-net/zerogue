@@ -476,7 +476,8 @@ void fobj_analyze( object *anl )
 	if( ( ch = pack_letter( "Place an item on the pedestal?", ALL_OBJECTS ) ) == ROGUE_KEY_CANCEL )
 		return ;
 
-	if( !( obj = get_letter_object(ch) ) ) return ; // Catch invalid letters.
+	obj = get_letter_object(ch) ;
+	if( ! obj ) return ; // Catch invalid letters.
 
 	if( rand_percent( ANALYSIS_BREAK_CHANCE ) )
 		if( break_analyzed_object( anl, obj ) )

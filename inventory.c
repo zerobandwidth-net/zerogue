@@ -247,6 +247,27 @@ void get_desc( object *obj, char *desc, boolean capitalize )
 	char more_info[32];
 	short i;
 
+	if( ! obj )
+	{ // Avoid a segfault.
+		if( capitalize )
+			(void) strcpy( desc, "A confusing quantum swirl" ) ;
+		else
+			(void) strcpy( desc, "a confusing quantum swirl" ) ;
+		return ;
+	}
+
+	if( ! obj->what_is )
+	{ // Avoid a segfault.
+//		sprintf( desc, "what_is [%d], which_kind [%d]", obj->what_is, obj->which_kind ) ;
+// Uncomment lines above for diagnostic info.
+// Uncomment lines below for a cover-up message.
+		if( capitalize )
+			(void) strcpy( desc, "A confusing quantum swirl" ) ;
+		else
+			(void) strcpy( desc, "a confusing quantum swirl" ) ;
+		return ;
+	}
+
 	if (obj->what_is == AMULET)
 	{
 		if( capitalize )
@@ -514,20 +535,32 @@ struct id * get_id_table(object *obj)
 {
 	switch(obj->what_is)
 	{
-	case SCROLL:
-		return(id_scrolls);
-	case POTION:
-		return(id_potions);
-	case WAND:
-		return(id_wands);
-	case RING:
-		return(id_rings);
-	case WEAPON:
-		return(id_weapons);
-	case ARMOR:
-		return(id_armors);
+	case SCROLL: return(id_scrolls) ;
+	case POTION: return(id_potions) ;
+	case WAND:   return(id_wands)   ;
+	case RING:   return(id_rings)   ;
+	case WEAPON: return(id_weapons) ;
+	case ARMOR:  return(id_armors)  ;
 	}
 	return((struct id *) 0);
+}
+
+/**
+ * Gets the length of the array of items based on the type of an object.
+ */
+int get_id_table_dim( object *obj )
+{
+	if( ! obj ) return -1 ;
+	switch( obj->what_is )
+	{
+		case SCROLL: return SCROLLS ;
+		case POTION: return POTIONS ;
+		case WAND:   return WANDS   ;
+		case RING:   return RINGS   ;
+		case WEAPON: return WEAPONS ;
+		case ARMOR:  return ARMORS  ;
+	}
+	return -1 ;
 }
 
 void inv_armor_weapon(boolean is_weapon)

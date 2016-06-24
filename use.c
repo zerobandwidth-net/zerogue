@@ -409,13 +409,35 @@ void identify_item( short ichar )
 		}
 	}
 
-	if( ! obj ) return ; // Avoids a segfault. (issue 1)
+	if( ! obj )
+	{ // Avoid a segfault for a null object.
+		message( "You are momentarily dazed by the object's beauty.", 0 ) ;
+		return ;
+	}
 
-	obj->identified = 1;
-	if (obj->what_is & (SCROLL | POTION | WEAPON | ARMOR | WAND | RING))
+	obj->identified = 1 ;
+	if( obj->what_is & (SCROLL | POTION | WEAPON | ARMOR | WAND | RING) )
 	{
-		id_table = get_id_table(obj);
-		id_table[obj->which_kind].id_status = IDENTIFIED;
+		int table_length ;
+
+		id_table = get_id_table(obj) ;
+		if( ! id_table )
+		{ // Avoid a segfault for a bad ID table reference.
+//			char* debug_message ;
+//			sprintf( debug_message, "name [%s], what_is [%d], table [%p]", name_of(obj), obj->what_is, id_table ) ;
+//			message( debug_message, 0 ) ;
+// Uncomment lines above for diagnostic info.
+// Uncomment lines below for a cover-up message.
+			message( "You don't know what you're holding.", 0 ) ;
+			return ;
+		}
+		table_length = get_id_table_dim(obj) ;
+		if( table_length == -1 || obj->which_kind >= table_length )
+		{ // Avoid a segfault for a bad ID table index.
+			message( "You know what sort of thing this is, but can't pin down the details.", 0 ) ;
+			return ;
+		}
+		id_table[obj->which_kind].id_status = IDENTIFIED ;
 	}
 	get_desc( obj, desc, 1 ) ;
 	message(desc, 0);
