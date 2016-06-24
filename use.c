@@ -409,6 +409,8 @@ void identify_item( short ichar )
 		}
 	}
 
+	if( ! obj ) return ; // Avoids a segfault. (issue 1)
+
 	obj->identified = 1;
 	if (obj->what_is & (SCROLL | POTION | WEAPON | ARMOR | WAND | RING))
 	{
