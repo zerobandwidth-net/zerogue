@@ -41,4 +41,12 @@ boolean has_amulet(void);
 
 void kick_into_pack(void);
 
+/**
+ * (0.4.5) Centralize a "select an item from a pack" function.
+ * short *pch - Pointer to an input character value, so we can overwrite it.
+ * char *prompt - Prompt to be displayed to the player.
+ * unsigned short mask - category of objects to be selected, or ALL_OBJECTS
+ */
+object * select_from_pack( short *pch, char *prompt, unsigned short mask ) ;
+
 #endif	/* _PACK_H_ */

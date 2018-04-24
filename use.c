@@ -202,17 +202,8 @@ void read_scroll(void)
 		return;
 	}
 
-	ch = pack_letter("Read what?", SCROLL);
-
-	if (ch == ROGUE_KEY_CANCEL)
-	{
-		return;
-	}
-	if (!(obj = get_letter_object(ch)))
-	{
-		message("No such item.", 0);
-		return;
-	}
+	obj = select_from_pack( &ch, "Read which scroll?", SCROLL ) ;
+	if( !obj ) return ;
 	if (obj->what_is != SCROLL)
 	{
 		message("You can't read that!", 0);
@@ -386,34 +377,38 @@ void potion_heal(int extra)
 void identify_item( short ichar )
 {
 	short ch = 0 ;
-	object *obj;
-	struct id *id_table;
-	char desc[DCOLS];
+	object *obj = 0 ;
+	struct id *id_table ;
+	char desc[DCOLS] ;
 
 	if( ichar ) ch = ichar ;
 
-    while( !ch ) /* Until valid input is given...*/
-    {
-		ch = pack_letter( "What would you like to identify?", ALL_OBJECTS ) ;
- 
-		if( ch == ROGUE_KEY_CANCEL )
-		{
-			return ;
-		}
-		if( !(obj = get_letter_object(ch)) )
-		{
-			message( "No such item. Try again.", 0 ) ;
-			message( "", 0 ) ;
-			check_message() ;
-			ch = 0 ;
-		}
+	obj = select_from_pack( &ch, "What would you like to identify?", ALL_OBJECTS ) ;
+
+	if( ! obj )
+	{ // Avoid a segfault for a null object.
+		message( "You are momentarily dazed by the object's beauty.", 0 ) ;
+		return ;
 	}
 
-	obj->identified = 1;
-	if (obj->what_is & (SCROLL | POTION | WEAPON | ARMOR | WAND | RING))
+	obj->identified = 1 ;
+	if( obj->what_is & (SCROLL | POTION | WEAPON | ARMOR | WAND | RING) )
 	{
-		id_table = get_id_table(obj);
-		id_table[obj->which_kind].id_status = IDENTIFIED;
+		int table_length ;
+
+		id_table = get_id_table(obj) ;
+		if( ! id_table )
+		{ // Avoid a segfault for a bad ID table reference.
+			message( "You don't know what you're holding.", 0 ) ;
+			return ;
+		}
+		table_length = get_id_table_dim(obj) ;
+		if( table_length == -1 || obj->which_kind >= table_length )
+		{ // Avoid a segfault for a bad ID table index.
+			message( "You know what sort of thing this is, but can't pin down the details.", 0 ) ;
+			return ;
+		}
+		id_table[obj->which_kind].id_status = IDENTIFIED ;
 	}
 	get_desc( obj, desc, 1 ) ;
 	message(desc, 0);
@@ -426,17 +421,9 @@ void eat(void)
 	object *obj;
 	char buf[70];
 
-	ch = pack_letter("Eat what?", FOOD);
+	obj = select_from_pack( &ch, "Eat what?", FOOD ) ;
+	if( !obj ) return ;
 
-	if (ch == ROGUE_KEY_CANCEL)
-	{
-		return;
-	}
-	if (!(obj = get_letter_object(ch)))
-	{
-		message("No such item.", 0);
-		return;
-	}
 	if (obj->what_is != FOOD)
 	{
 		message("You can't eat that!", 0);

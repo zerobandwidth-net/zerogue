@@ -21,6 +21,8 @@ void single_inv(short ichar);
 
 struct id * get_id_table(object *obj);
 
+int get_id_table_dim( object *obj ) ;
+
 void inv_armor_weapon(boolean is_weapon);
 
 #endif	/* _INVENTORY_H_ */
