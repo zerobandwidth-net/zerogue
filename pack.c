@@ -589,3 +589,24 @@ void kick_into_pack(void)
     }
 }
 
+object * select_from_pack( short *pch, char *prompt, unsigned short mask )
+{
+	if( ! is_pack_letter( pch, &mask ) ) *pch = 0 ;
+	object *obj = 0 ;
+
+	while( !obj )
+	{
+		if( !(*pch) ) *pch = pack_letter( prompt, mask ) ;
+		if( *pch == ROGUE_KEY_CANCEL ) return 0 ;
+		if(!( obj = get_letter_object(*pch) ))
+		{
+			message( "No such item. Try again.", 0 ) ;
+			message( "", 0 ) ;
+			check_message() ;
+			*pch = 0 ;
+		}
+	}
+
+	return obj ;
+}
+

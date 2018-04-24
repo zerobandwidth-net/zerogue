@@ -386,28 +386,13 @@ void potion_heal(int extra)
 void identify_item( short ichar )
 {
 	short ch = 0 ;
-	object *obj;
-	struct id *id_table;
-	char desc[DCOLS];
+	object *obj = 0 ;
+	struct id *id_table ;
+	char desc[DCOLS] ;
 
 	if( ichar ) ch = ichar ;
 
-    while( !ch ) /* Until valid input is given...*/
-    {
-		ch = pack_letter( "What would you like to identify?", ALL_OBJECTS ) ;
- 
-		if( ch == ROGUE_KEY_CANCEL )
-		{
-			return ;
-		}
-		if( !(obj = get_letter_object(ch)) )
-		{
-			message( "No such item. Try again.", 0 ) ;
-			message( "", 0 ) ;
-			check_message() ;
-			ch = 0 ;
-		}
-	}
+	obj = select_from_pack( &ch, "What would you like to identify?", ALL_OBJECTS ) ;
 
 	if( ! obj )
 	{ // Avoid a segfault for a null object.

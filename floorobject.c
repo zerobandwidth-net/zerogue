@@ -6,6 +6,7 @@
 /* *** INCLUDES ************************************************************ */
 
 #include <ncurses.h>
+#include <string.h> // for debug only
 #include "rogue.h"
 #include "floorobject.h"
 #include "inventory.h"
@@ -36,12 +37,12 @@ extern object level_monsters ; // monster.c
 /* *** LOCAL DATA DEFINITIONS ********************************************** */
 
 // Minimum level on which each type of floor object will appear.
-short fobj_level[FLOOROBJECTS] =
-	{ 0, 8, 12, 14 } ;
+//short fobj_level[FLOOROBJECTS] = { 0, 8, 12, 14 } ;
+short fobj_level[FLOOROBJECTS] = { 0, 8, 1, 14 } ;
 
 // Base chance of each type appearing; these are added to the current level.
-short fobj_chance[FLOOROBJECT] =
-	{ 0, 42, -2, 6 } ;
+//short fobj_chance[FLOOROBJECT] = { 0, 42, -2, 6 } ;
+short fobj_chance[FLOOROBJECT] = { 0, 42, 99, 6 } ;
 
 /* *** LOCAL FUNCTION DECLARATIONS ***************************************** */
 
@@ -157,9 +158,8 @@ void fobj_transmutate( object *tm )
 		message( "This is a transmutator.", 1 ) ;
 		tm->identified = 1 ;
 	}
-	message( "Feed it [G]old, or an [I]tem?", 0 ) ;
-	while( ! is_valid_char( (ch=rgetchar()), "GgIi\033" ) )
-		message( "Feed it [G]old, or an [I]tem?", 0 ) ;
+	do { message( "Feed it [G]old, or an [I]tem?", 0 ) ; }
+	while( ! is_valid_char( (ch=rgetchar()), "GgIi\033" ) ) ;
 	check_message() ;
 
 	if( ch == ROGUE_KEY_CANCEL ) return ; // Cancel.
@@ -464,8 +464,8 @@ object * choose_transmutator_object( object *pack )
  */
 void fobj_analyze( object *anl )
 {
-	short ch ; // Input character.
-	object *obj ; // Object to be traded or created.
+	short ch = 0 ; // Input character.
+	object *obj = 0 ; // Object to be traded or created.
 
 	if( !anl->identified )
 	{
@@ -473,10 +473,8 @@ void fobj_analyze( object *anl )
 		anl->identified = 1 ;
 	}
 
-	if( ( ch = pack_letter( "Place an item on the pedestal?", ALL_OBJECTS ) ) == ROGUE_KEY_CANCEL )
-		return ;
+	obj = select_from_pack( &ch, "Place which item on the pedestal?", ALL_OBJECTS ) ;
 
-	obj = get_letter_object(ch) ;
 	if( ! obj ) return ; // Catch invalid letters.
 
 	if( rand_percent( ANALYSIS_BREAK_CHANCE ) )
