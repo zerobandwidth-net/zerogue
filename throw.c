@@ -63,16 +63,9 @@ void throw(void)
 		return;
 	}
 
-	if( ( wch = pack_letter( "Throw what?", (WEAPON|POTION) ) ) == ROGUE_KEY_CANCEL )
-		return ;
-
+	weapon = select_from_pack( &wch, "Throw or shoot what?", (WEAPON|POTION) ) ;
+	if( !weapon ) return ;
 	check_message() ;
-
-	if (!(weapon = get_letter_object(wch)))
-	{
-		message("No such item.", 0);
-		return;
-	}
 	if ((weapon->in_use_flags & BEING_USED) && weapon->is_cursed)
 	{
 		message(curse_message, 0);

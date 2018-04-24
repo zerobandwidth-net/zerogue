@@ -41,19 +41,12 @@ extern short halluc ;
  */
 void appraise( short ichar )
 {
-	short ch ;
+	short ch = ( ichar ? ichar : 0 ) ;
 	char desc[DCOLS] ;
 	object *obj ;
 
-	ch = ichar ? ichar : pack_letter( "Appraise what?", ALL_OBJECTS ) ;
-
-	if( ch == ROGUE_KEY_CANCEL ) return ;
-
-	if( ! ( obj = get_letter_object(ch) ) )
-	{
-		message( "No such item.", 0 ) ;
-		return ;
-	}
+	obj = select_from_pack( &ch, "Appraise which item?", ALL_OBJECTS ) ;
+	if( !obj ) return ;
 
 	if( halluc )
 	{

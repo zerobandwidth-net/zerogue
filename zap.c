@@ -62,17 +62,11 @@ void zapp(void)
 	{
 		return;
 	}
-	if ((wch = pack_letter("Zap with what?", WAND)) == ROGUE_KEY_CANCEL)
-	{
-		return;
-	}
+
+	wand = select_from_pack( &wch, "Zap with what?", WAND ) ;
+	if( !wand ) return ;
 	check_message();
 
-	if (!(wand = get_letter_object(wch)))
-	{
-		message("No such item.", 0);
-		return;
-	}
 	if (wand->what_is != WAND)
 	{
 		message("You can't zap with that.", 0);
