@@ -202,17 +202,8 @@ void read_scroll(void)
 		return;
 	}
 
-	ch = pack_letter("Read what?", SCROLL);
-
-	if (ch == ROGUE_KEY_CANCEL)
-	{
-		return;
-	}
-	if (!(obj = get_letter_object(ch)))
-	{
-		message("No such item.", 0);
-		return;
-	}
+	obj = select_from_pack( &ch, "Read which scroll?", SCROLL ) ;
+	if( !obj ) return ;
 	if (obj->what_is != SCROLL)
 	{
 		message("You can't read that!", 0);
@@ -408,11 +399,6 @@ void identify_item( short ichar )
 		id_table = get_id_table(obj) ;
 		if( ! id_table )
 		{ // Avoid a segfault for a bad ID table reference.
-//			char* debug_message ;
-//			sprintf( debug_message, "name [%s], what_is [%d], table [%p]", name_of(obj), obj->what_is, id_table ) ;
-//			message( debug_message, 0 ) ;
-// Uncomment lines above for diagnostic info.
-// Uncomment lines below for a cover-up message.
 			message( "You don't know what you're holding.", 0 ) ;
 			return ;
 		}
@@ -435,17 +421,9 @@ void eat(void)
 	object *obj;
 	char buf[70];
 
-	ch = pack_letter("Eat what?", FOOD);
+	obj = select_from_pack( &ch, "Eat what?", FOOD ) ;
+	if( !obj ) return ;
 
-	if (ch == ROGUE_KEY_CANCEL)
-	{
-		return;
-	}
-	if (!(obj = get_letter_object(ch)))
-	{
-		message("No such item.", 0);
-		return;
-	}
 	if (obj->what_is != FOOD)
 	{
 		message("You can't eat that!", 0);

@@ -340,17 +340,10 @@ void wear(void)
 		message("Your already wearing some.", 0);
 		return;
 	}
-	ch = pack_letter("Wear what?", ARMOR);
 
-	if (ch == ROGUE_KEY_CANCEL)
-	{
-		return;
-	}
-	if (!(obj = get_letter_object(ch)))
-	{
-		message("No such item.", 0);
-		return;
-	}
+	obj = select_from_pack( &ch, "Wear what?", ARMOR ) ;
+	if( !obj ) return ; // Selection was cancelled.
+
 	if (obj->what_is != ARMOR)
 	{
 		message("You can't wear that!", 0);
@@ -392,17 +385,10 @@ void wield(void)
 		message(curse_message, 0);
 		return;
 	}
-	ch = pack_letter("Wield what?", WEAPON);
 
-	if (ch == ROGUE_KEY_CANCEL)
-	{
-		return;
-	}
-	if (!(obj = get_letter_object(ch)))
-	{
-		message("No such item.", 0);
-		return;
-	}
+	obj = select_from_pack( &ch, "Wield which weapon?", WEAPON ) ;
+	if( !obj ) return ;
+
 	if (obj->what_is & (ARMOR | RING))
 	{
 		sprintf(desc, "You can't wield %s.",
@@ -449,17 +435,9 @@ void call_it(void)
 	struct id *id_table;
 	char buf[MAX_TITLE_LENGTH+2];
 
-	ch = pack_letter("Call what?", (SCROLL | POTION | WAND | RING));
+	obj = select_from_pack( &ch, "Name which item?", (SCROLL|POTION|WAND|RING) ) ;
+	if( !obj ) return ;
 
-	if (ch == ROGUE_KEY_CANCEL)
-	{
-		return;
-	}
-	if (!(obj = get_letter_object(ch)))
-	{
-		message("No such item.", 0);
-		return;
-	}
 	if (!(obj->what_is & (SCROLL | POTION | WAND | RING)))
 	{
 		message("Surely you already know what that's called!", 0);
@@ -597,7 +575,7 @@ object * select_from_pack( short *pch, char *prompt, unsigned short mask )
 	while( !obj )
 	{
 		if( !(*pch) ) *pch = pack_letter( prompt, mask ) ;
-		if( *pch == ROGUE_KEY_CANCEL ) return 0 ;
+		if( *pch == ROGUE_KEY_CANCEL ) return 0 ;  // Breaks loop and returns 0.
 		if(!( obj = get_letter_object(*pch) ))
 		{
 			message( "No such item. Try again.", 0 ) ;

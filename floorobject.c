@@ -37,12 +37,12 @@ extern object level_monsters ; // monster.c
 /* *** LOCAL DATA DEFINITIONS ********************************************** */
 
 // Minimum level on which each type of floor object will appear.
-//short fobj_level[FLOOROBJECTS] = { 0, 8, 12, 14 } ;
-short fobj_level[FLOOROBJECTS] = { 0, 8, 1, 14 } ;
+short fobj_level[FLOOROBJECTS] = { 0, 8, 12, 14 } ;
+//short fobj_level[FLOOROBJECTS] = { 0, 1, 1, 1 } ; // DEBUG put on all floors
 
 // Base chance of each type appearing; these are added to the current level.
-//short fobj_chance[FLOOROBJECT] = { 0, 42, -2, 6 } ;
-short fobj_chance[FLOOROBJECT] = { 0, 42, 99, 6 } ;
+short fobj_chance[FLOOROBJECT] = { 0, 42, -2, 6 } ;
+//short fobj_chance[FLOOROBJECT] = { 0, 99, 99, 99 } ; // DEBUG put on all floors
 
 /* *** LOCAL FUNCTION DECLARATIONS ***************************************** */
 
@@ -165,11 +165,9 @@ void fobj_transmutate( object *tm )
 	if( ch == ROGUE_KEY_CANCEL ) return ; // Cancel.
 	else if( is_valid_char( ch, "Ii" ) ) // Transmute item into gold.
 	{
-		if( ( ch = pack_letter( "Transmute which item?", ALL_OBJECTS ) ) == ROGUE_KEY_CANCEL )
-			return ;
-
-		check_message() ;
-		if( ! ( obj = get_letter_object(ch) ) ) return ; // Catch invalid letters.
+		ch = 0 ;
+		obj = select_from_pack( &ch, "Transmute which item?", ALL_OBJECTS ) ;
+		if( !obj ) return ; // Selection was cancelled.
 		rogue.gold += get_value(obj) ;
 		print_stats(STAT_GOLD) ;
 		vanish( obj, 0, &rogue.pack ) ;

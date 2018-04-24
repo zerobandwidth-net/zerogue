@@ -45,15 +45,9 @@ void put_on_ring(void)
 		message("Wearing two rings already.", 0);
 		return;
 	}
-	if ((ch = pack_letter("Put on what?", RING)) == ROGUE_KEY_CANCEL)
-	{
-		return;
-	}
-	if (!(ring = get_letter_object(ch)))
-	{
-		message("No such item.", 0);
-		return;
-	}
+	ring = select_from_pack( &ch, "Put on which ring?", RING ) ;
+	if( !ring ) return ;
+
 	if (!(ring->what_is & RING))
 	{
 		message("That's not a ring!", 0);
