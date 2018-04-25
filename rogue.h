@@ -302,6 +302,7 @@ enum room_type
 #define STAT_HP 04
 #define STAT_STRENGTH 010
 #define STAT_ARMOR 020
+#define STAT_GEAR 020       // (0.4.6/#2) status bar shows both weapon and armor
 #define STAT_EXP 040
 #define STAT_HUNGER 0100
 #define STAT_LABEL 0200

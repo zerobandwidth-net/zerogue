@@ -109,15 +109,7 @@ int one_move_rogue(short dirch, short pickup)
 		(void) reg_move();
 		return(MOVE_FAILED);
 	}
-/*
-	// (zerogue 0.4.1) interact with a floor object
-	if( dungeon[row][col] & FLOOROBJECT )
-	{
-		fobj_interact( row, col ) ;
-		(void)reg_move() ;
-		return MOVE_FAILED ;
-	}
-*/
+
 	if (dungeon[row][col] & DOOR) {
 		if (cur_room == PASSAGE)
 		{
@@ -517,6 +509,7 @@ boolean reg_move(void)
 {
 	boolean fainted ;
 
+	print_stats( STAT_HUNGER ) ;
 	if( (rogue.moves_left <= HUNGRY) || (cur_level >= max_level) )
 		fainted = check_hunger(0) ;
 	else
