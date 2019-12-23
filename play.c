@@ -308,7 +308,7 @@ CH:
 			throw();
 			break;
 		case ROGUE_KEY_VERSION:
-			message("zerogue 0.4.5 beta - http://github.com/zerobandwidth-net/zerogue", 0);
+			message("zerogue 0.4.6 - http://github.com/zerobandwidth-net/zerogue", 0);
 			break;
 		case ROGUE_KEY_QUIT:
 			quit(0);
