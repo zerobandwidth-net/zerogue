@@ -181,10 +181,13 @@ int rgetchar(void)
 	}
 }
 /*
+original:
 Level: 99 Gold: 999999 HP: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000 Hungry
-0    5    1    5    2    5    3    5    4    5    5    5    6    5    7    5
+0....:....1....:....2....:....3....:....4....:....5....:....6....:....7....:....
+zerogue 0.4.6 (#2):
+LV [99](99999999)  $999999  HP 999/999  STR 99/99  ATK 9d99 DEF 99+  SUST 999%
+0....:....1....:....2....:....3....:....4....:....5....:....6....:....7....:....
 */
-
 void print_stats(int stat_mask)
 {
 	char buf[16];
@@ -193,97 +196,86 @@ void print_stats(int stat_mask)
 
 	label = (stat_mask & STAT_LABEL) ? 1 : 0;
 
-	if (stat_mask & STAT_LEVEL)
+	if( stat_mask & STAT_LEVEL || stat_mask & STAT_EXP )
 	{
-		if (label)
-		{
-			mvaddstr(row, 0, "Level: ");
-		}
-		/* max level taken care of in make_level() */
-		sprintf(buf, "%d", cur_level);
-		mvaddstr(row, 7, buf);
-		pad(buf, 2);
-	}
-	if (stat_mask & STAT_GOLD)
-	{
-		if (label)
-		{
-			if (rogue.gold > MAX_GOLD)
-			{
-				rogue.gold = MAX_GOLD;
-			}
-			mvaddstr(row, 10, "Gold: ");
-		}
-		sprintf(buf, "%ld", rogue.gold);
-		mvaddstr(row, 16, buf);
-		pad(buf, 6);
-	}
-	if (stat_mask & STAT_HP)
-	{
-		if (label)
-		{
-			mvaddstr(row, 23, "HP: ");
-			if (rogue.hp_max > MAX_HP)
-			{
-				rogue.hp_current -= (rogue.hp_max - MAX_HP);
-				rogue.hp_max = MAX_HP;
-			}
-		}
-		sprintf(buf, "%d(%d)", rogue.hp_current, rogue.hp_max);
-		mvaddstr(row, 27, buf);
-		pad(buf, 8);
-	}
-	if (stat_mask & STAT_STRENGTH)
-	{
-		if (label)
-		{
-			mvaddstr(row, 36, "Str: ");
-		}
-		if (rogue.str_max > MAX_STRENGTH)
-		{
-			rogue.str_current -= (rogue.str_max - MAX_STRENGTH);
-			rogue.str_max = MAX_STRENGTH;
-		}
-		sprintf(buf, "%d(%d)", (rogue.str_current + add_strength), rogue.str_max);
-		mvaddstr(row, 41, buf);
-		pad(buf, 6);
-	}
-	if (stat_mask & STAT_ARMOR)
-	{
-		if (label)
-		{
-			mvaddstr(row, 48, "Arm: ");
-		}
-		if (rogue.armor && (rogue.armor->d_enchant > MAX_ARMOR))
-		{
-			rogue.armor->d_enchant = MAX_ARMOR;
-		}
-		sprintf(buf, "%d", get_armor_class(rogue.armor));
-		mvaddstr(row, 53, buf);
-		pad(buf, 2);
-	}
-	if (stat_mask & STAT_EXP)
-	{
-		if (label)
-		{
-			mvaddstr(row, 56, "Exp: ");
-		}
-		/*  Max exp taken care of in add_exp() */
-		/* (zerogue 0.4.1) Adds markers if a level modifier is in effect. */
+		if( label ) mvaddstr( row, 0, "LV " ) ;
 		if( expmod != 0 )
-			sprintf( buf, "[%d]/%ld", get_rogue_level(1), rogue.exp_points) ;
+			sprintf( buf, "[%d](%ld)", get_rogue_level(1), rogue.exp_points) ;
 		else
-			sprintf(buf, "%d/%ld", rogue.exp, rogue.exp_points) ;
-			
-		mvaddstr(row, 61, buf);
-		pad(buf, 11);
+			sprintf(buf, "%d (%ld)", rogue.exp, rogue.exp_points) ;
+		mvaddstr( row, 3, buf ) ;
+		pad( buf, 16 ) ;
 	}
-	if (stat_mask & STAT_HUNGER)
+	if( stat_mask & STAT_GOLD )
 	{
-		mvaddstr(row, 73, hunger_str);
-		clrtoeol();
+		if( rogue.gold > MAX_GOLD )
+			rogue.gold = MAX_GOLD ;
+		sprintf( buf, "$%ld", rogue.gold ) ;
+		mvaddstr( row, 19, buf ) ;
+		pad( buf, 7 ) ;
 	}
-	refresh();
+	if( stat_mask & STAT_HP )
+	{
+		if( label ) mvaddstr( row, 28, "HP " ) ;
+		if( rogue.hp_max > MAX_HP )
+		{ // Failsafe to keep HP under the absolute maximum.
+			rogue.hp_current -= ( rogue.hp_max - MAX_HP ) ;
+			rogue.hp_max = MAX_HP ;
+		}
+		sprintf( buf, "%d/%d", rogue.hp_current, rogue.hp_max ) ;
+		mvaddstr( row, 31, buf ) ;
+		pad( buf, 9 ) ;
+	}
+	if( stat_mask & STAT_STRENGTH )
+	{
+		if( label ) mvaddstr( row, 40, "STR " ) ;
+		if( rogue.str_max > MAX_STRENGTH )
+		{ // Failsafe to keep strength under the absolute maximum.
+			rogue.str_current -= ( rogue.str_max - MAX_STRENGTH ) ;
+			rogue.str_max = MAX_STRENGTH ;
+		}
+		sprintf( buf, "%d/%d", ( rogue.str_current + add_strength ), rogue.str_max ) ;
+		mvaddstr( row, 44, buf ) ;
+		pad( buf, 7 ) ;
+	}
+	if( stat_mask & STAT_GEAR )
+	{
+		if( label )
+		{
+			mvaddstr( row, 51, "ATK " ) ;
+			mvaddstr( row, 60, "DEF " ) ;
+		}
+
+		if( rogue.weapon )
+			mvaddstr( row, 55, rogue.weapon->damage ) ;
+		else
+			mvaddstr( row, 55, "---  " ) ;
+
+		if( rogue.armor )
+		{
+			if( rogue.armor->d_enchant > MAX_ARMOR )
+				rogue.armor->d_enchant = MAX_ARMOR ;
+			sprintf( buf, "%d%s%s", get_armor_class(rogue.armor),
+					( rogue.armor->is_protected ? "+" : "" ),
+					( rogue.armor->is_cursed ? "-" : "" )
+				);
+			mvaddstr( row, 64, buf ) ;
+			pad( buf, 5 ) ;
+		}
+		else mvaddstr( row, 64, "---  " ) ;
+	}
+	if( stat_mask & STAT_HUNGER )
+	{
+		if( label ) mvaddstr( row, 69, "SUST " ) ;
+		// calculate hunger as a percentage
+		// reduced from ( 100 * rogue.moves_left ) / ( 4 * HUNGRY ) ;
+		unsigned short hunger_pct = ( 25 * rogue.moves_left ) / HUNGRY ;
+		sprintf( buf, "%d%%", hunger_pct ) ;
+		mvaddstr( row, 74, buf ) ;
+		clrtoeol() ;
+	}
+
+	refresh() ;
 }
 
 void pad(char *s, short n)
