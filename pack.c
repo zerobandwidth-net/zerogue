@@ -410,6 +410,7 @@ void wield(void)
 		message(desc, 0);
 		do_wield(obj);
 		(void) reg_move();
+		print_stats( STAT_GEAR ) ;
 	}
 }
 

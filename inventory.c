@@ -431,7 +431,7 @@ ID:		switch(obj->what_is)
 			break;
 		case ARMOR:
 			sprintf(desc, "%s%d ", ((obj->d_enchant >= 0) ? "+" : ""),
-			obj->d_enchant);
+					obj->d_enchant);
 			(void) strcat(desc, id_table[obj->which_kind].title);
 			sprintf( more_info, "[%d%s%s] ", get_armor_class(obj), (obj->is_protected ? "+" : ""), (obj->is_cursed ? "-" : "") ) ;
 			(void) strcat(desc, more_info);
