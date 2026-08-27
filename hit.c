@@ -27,7 +27,7 @@
 #include "special_hit.h"
 
 object *fight_monster = 0;
-boolean detect_monster;
+extern boolean detect_monster;
 char hit_message[80] = "";
 
 extern int cur_level;

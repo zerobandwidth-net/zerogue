@@ -21,4 +21,6 @@ void name_cipher(char *buf, int n);
 
 long char_cipher(boolean st);
 
+int get_value(object *);
+
 #endif	/* _SCORE_H_ */

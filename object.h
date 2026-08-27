@@ -21,6 +21,8 @@ char * name_of(object *obj);
 
 object * gr_object(void);
 
+void set_weapon_damage(object *obj);
+
 void get_food(object *obj, boolean force_ration);
 
 void put_stairs(void);
