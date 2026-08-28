@@ -15,6 +15,7 @@
 #include "rogue.h"
 #include "hit.h"
 #include "keys.h"
+#include "level.h"
 #include "message.h"
 #include "monster.h"
 #include "move.h"

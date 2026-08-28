@@ -13,6 +13,7 @@
 #include <ncurses.h>
 #include "rogue.h"
 #include "hit.h"
+#include "level.h"
 #include "message.h"
 #include "monster.h"
 #include "move.h"
