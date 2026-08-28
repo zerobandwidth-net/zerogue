@@ -13,9 +13,11 @@
 #include <ncurses.h>
 #include <string.h>
 #include "rogue.h"
+#include "floorobject.h"
 #include "hit.h"
 #include "inventory.h"
 #include "keys.h"
+#include "level.h"
 #include "message.h"
 #include "monster.h"
 #include "move.h"

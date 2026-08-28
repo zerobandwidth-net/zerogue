@@ -9,6 +9,8 @@
 
 void inventory(object *pack, unsigned short mask);
 
+char inv_sel(object *pack, unsigned short mask, char *prompt, char *term);
+
 void mix_colors(void);
 
 void make_scroll_titles(void);

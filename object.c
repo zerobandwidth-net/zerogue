@@ -513,7 +513,7 @@ void gr_potion( object *obj )
 */
 }
 
-extern void set_weapon_damage(object *obj)
+void set_weapon_damage(object *obj)
 {
 	switch(obj->which_kind)
 	{

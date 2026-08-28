@@ -18,6 +18,7 @@
 #include "init.h"
 #include "machdep.h"
 #include "message.h"
+#include "monster.h"
 #include "object.h"
 #include "pack.h"
 #include "ring.h"

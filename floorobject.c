@@ -18,6 +18,7 @@
 #include "random.h"
 #include "room.h"
 #include "score.h"
+#include "special_hit.h"
 #include "use.h"
 
 /* *** EXTERNAL REFERENCES ************************************************* */

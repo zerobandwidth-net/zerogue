@@ -144,7 +144,7 @@ char inv_sel(object *pack, unsigned short mask, char *prompt, char *term)
 	if (!obj)
 	{
 		message("Your pack is empty.", 0);
-		return;
+		return ' ';
 	}
 	while (obj)
 	{

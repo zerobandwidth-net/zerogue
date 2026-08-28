@@ -47,7 +47,6 @@ int name_cmp(char *, char *);
 void insert_score(char [][82], char [][30], char *, int, int,
                   object *, int);
 void nickize(char *, char *, char *);
-int get_value(object *);
 
 void killed_by(object *monster, int other)
 {
